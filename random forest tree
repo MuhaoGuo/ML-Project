@@ -1,0 +1,39 @@
+from sklearn.ensemble import RandomForestClassifier
+import pandas as pd
+from sklearn.model_selection import train_test_split
+import numpy as np
+
+train_path = '/Users/muhaoguo/Documents/study/EE660/project/train.csv'
+train = pd.read_csv(train_path,index_col=0)
+test_path = '/Users/muhaoguo/Documents/study/EE660/project/test.csv'
+test = pd.read_csv(test_path,index_col=0)
+
+#####  separate x and y：
+y_train = train.loc[:,'ConvertedComp']
+x_train = train.drop(['MainBranch','ConvertedComp'],axis=1)
+
+y_test = test.loc[:,'ConvertedComp']
+x_test = test.drop(['MainBranch','ConvertedComp'],axis=1)
+
+print ('----------------------------------------')
+
+def Randomforest_Algorithm(Train_X,Train_Y,Test_X,Test_Y):
+    train_score_list=[]
+    test_score_list=[]
+    x_train_bag, unuse1, y_train_bag , unuse2 = train_test_split(Train_X, Train_Y, test_size=0.67)
+    y_train_bag = np.ravel(y_train_bag)
+    for maxfeature in range(5,10):
+        for treenumber in range(100,1500,50):
+            clf = RandomForestClassifier (n_estimators=treenumber, bootstrap=True, max_features=maxfeature)
+            clf.fit(x_train_bag, y_train_bag)
+
+            score_train_each_B = clf.score(Train_X, Train_Y)
+            score_test_each_B = clf.score(Test_X, Test_Y)
+
+            ##calculate the error
+            train_score_list.append(score_train_each_B)
+            test_score_list.append(score_test_each_B)
+
+    return max(train_score_list), max(test_score_list)
+
+print (Randomforest_Algorithm(x_train, y_train, x_test, y_test))
