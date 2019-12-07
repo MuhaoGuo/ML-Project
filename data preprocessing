@@ -1,15 +1,18 @@
 import pandas
+import pandas as pd
 
-## ******** only use the first 1000 data sample for simple
-path='/Users/muhaoguo/Documents/study/EE660/project/survey_results_public.csv'
-data_original = pandas.read_csv(path)
-data_original = data_original.iloc[0:30000]
-data_original.to_csv('/Users/muhaoguo/Documents/study/EE660/project/data.csv')
+# path = '/Users/muhaoguo/Documents/study/EE660/project/survey_results_public.csv'
+########################################################################################
+data_original = pandas.read_csv("survey_results_public.csv")                                                   #
+data_original = data_original.iloc[:60000]                                              #
+data_original.to_csv('/Users/muhaoguo/Documents/study/EE660/project/data.csv')          #
+path = '/Users/muhaoguo/Documents/study/EE660/project/data.csv'                         #
+########################################################################################
+print (data_original)
 
-path='/Users/muhaoguo/Documents/study/EE660/project/data.csv'
 
 # ********  select the useful features
-data_original = pandas.read_csv(path,usecols=[2,3,4,5,6,7,9,10,12,13,14,15,16,17,18,19,20,21,22,23,32,33,34,36,
+data_original = pandas.read_csv(path, usecols=[2,3,4,5,6,7,9,10,12,13,14,15,16,17,18,19,20,21,22,23,32,33,34,36,
                                               37,38,39,40,43,55,56,57,59,60,63,
                                               78,79,83])
 # Index=['MainBranch', 'Hobbyist', 'OpenSourcer', 'OpenSource', 'Employment',
@@ -121,10 +124,12 @@ data_original.index=[i for i in range(data_original.shape[0])]
 
 print ('------------------------------？-----------------------------------------------------')
 
-# ['YearsCode', 14]:   str to int.  special case : Less than 1 year  --->0
+# ['YearsCode', 14]:   str to int.  special case : Less than 1 year  --->0 ;  More than 50 years--->50
 for i in range(len(data_original)):
-    if data_original.loc[i,'YearsCode']=='Less than 1 year':
-        data_original.loc[i, 'YearsCode']='0'
+    if data_original.loc[i,'YearsCode'] == 'Less than 1 year':
+        data_original.loc[i, 'YearsCode'] = '0'
+    elif data_original.loc[i,'YearsCode'] == 'More than 50 years':
+        data_original.loc[i, 'YearsCode'] = '50'
 # data_original.loc[i,['YearsCode'] == 'Less than 1 year'] = '0'    #special option    #此方法不行
 # data_original['YearsCode'].loc[data_original['YearsCode'] == 'Less than 1 year'] = '0'    #special option
 data_original['YearsCode'] = data_original['YearsCode'].astype(int)
@@ -132,8 +137,9 @@ print ('-----------------------------？----------------------------------------
 
 #['Age1stCode', 15]:   str to int. special case : Younger than 5 years ---> 5
 for i in range(len(data_original)):
-    if data_original.loc[i,'Age1stCode']=='Younger than 5 years':
-        data_original.loc[i, 'Age1stCode']='5'
+    if data_original.loc[i,'Age1stCode'] == 'Younger than 5 years':
+        data_original.loc[i, 'Age1stCode'] = '5'
+
 # data_original['Age1stCode'].loc[data_original['Age1stCode'] == 'Younger than 5 years'] = '5'
 data_original['Age1stCode'] = data_original['Age1stCode'].astype(int)
 print ('----------------------------?--------------------------------------------------------')
@@ -161,7 +167,23 @@ for i in range (len(data_original)):
         data_original.loc[i,'ConvertedComp'] = '100000-200000'
     else:
         data_original.loc[i,'ConvertedComp'] = 'more than 200000'
+# for i in range (len(data_original['ConvertedComp'])):
+#     if data_original['ConvertedComp'][i] <= 10000:
+#         data_original['ConvertedComp'][i]='less than 10000'
+#     elif 10000 < data_original['ConvertedComp'][i] <= 50000:
+#         data_original['ConvertedComp'][i] = '10000-50000'
+#     elif 50000 < data_original['ConvertedComp'][i] <= 100000:
+#         data_original['ConvertedComp'][i] = '50000-100000'
+#     elif 100000 < data_original['ConvertedComp'][i] <= 200000:
+#         data_original['ConvertedComp'][i] = '100000-200000'
+#     else:
+#         data_original['ConvertedComp'][i] = 'more than 200000'
 
+# data_original.loc[data_original['ConvertedComp'] <=10000] = 'less than 10000'
+# data_original.loc[10000 < data_original['ConvertedComp'] <=50000] = '10000-50000'
+# data_original.loc[50000 < data_original['ConvertedComp'] <=100000] = '50000-100000'
+# data_original.loc[100000 < data_original['ConvertedComp'] <=200000] = '100000-200000'
+# data_original.loc[data_original['ConvertedComp'] > 200000] = 'more than 200000'
 print ('-----------------------------?-------------------------------------------------------')
 
 # ['WorkWeekHrs', 33]：
@@ -197,6 +219,7 @@ str_feature=['Hobbyist'	,'OpenSourcer','OpenSource','Employment',	'Country',	'Ed
              'BlockchainOrg'	,'BetterLife'	,'ITperson'	,'Extraversion',	'Gender',	'Dependents']
 
 label=['ConvertedComp']
+
 # encode data : transfrom the str features to int features
 le = sklearn.preprocessing.LabelEncoder()
 for feature in str_feature:
@@ -208,7 +231,23 @@ train, test = train_test_split(data_original, test_size=0.3)
 train.index = [i for i in range(train.shape[0])]
 test.index = [i for i in range(test.shape[0])]
 
-print(train)
+if __name__ == '__main__':
+    print(train)
 
 train.to_csv('/Users/muhaoguo/Documents/study/EE660/project/train.csv')
 test.to_csv('/Users/muhaoguo/Documents/study/EE660/project/test.csv')
+
+train_path = '/Users/muhaoguo/Documents/study/EE660/project/train.csv'
+train = pd.read_csv(train_path, index_col=0)
+test_path = '/Users/muhaoguo/Documents/study/EE660/project/test.csv'
+test = pd.read_csv(test_path, index_col=0)
+
+#####  separate x and y：
+y_train = train.loc[:,'ConvertedComp']
+x_train = train.drop(['MainBranch','ConvertedComp'],axis=1)
+
+y_test = test.loc[:,'ConvertedComp']
+x_test = test.drop(['MainBranch','ConvertedComp'],axis=1)
+
+
+print ('------------here is data preprocessing---------------------')
