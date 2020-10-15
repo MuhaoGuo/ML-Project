@@ -3,8 +3,8 @@ import pandas as pd
 
 # path = '/Users/muhaoguo/Documents/study/EE660/project/survey_results_public.csv'
 ########################################################################################
-data_original = pandas.read_csv("survey_results_public.csv")                                                   #
-data_original = data_original.iloc[:60000]                                              #
+data_original = pandas.read_csv("/Users/muhaoguo/Documents/study/EE660/project/survey_results_public.csv")#
+data_original = data_original.iloc[:]                                              #
 data_original.to_csv('/Users/muhaoguo/Documents/study/EE660/project/data.csv')          #
 path = '/Users/muhaoguo/Documents/study/EE660/project/data.csv'                         #
 ########################################################################################
@@ -12,9 +12,10 @@ print (data_original)
 
 
 # ********  select the useful features
-data_original = pandas.read_csv(path, usecols=[2,3,4,5,6,7,9,10,12,13,14,15,16,17,18,19,20,21,22,23,32,33,34,36,
-                                              37,38,39,40,43,55,56,57,59,60,63,
-                                              78,79,83])
+data_original = pandas.read_csv(path, usecols=[2,3,4,5,6,7,9,10,12,13,
+                                               14,15,16,17,18,19,20,21,22,23,
+                                               32,33,34,36,37,38,39,40,43,55,      ###### 34 NO
+                                               56,57,59,60,63,78,79,83])
 # Index=['MainBranch', 'Hobbyist', 'OpenSourcer', 'OpenSource', 'Employment',
 #        'Country', 'Student', 'EdLevel', 'UndergradMajor', 'EduOther',
 #        'OrgSize', 'DevType', 'YearsCode', 'Age1stCode', 'YearsCodePro',
@@ -31,13 +32,9 @@ data_original = pandas.read_csv(path, usecols=[2,3,4,5,6,7,9,10,12,13,14,15,16,1
 # cols=[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,32,33,34,36,37,38,39,40,43,44,45,46,47,48,49,50,51,52,53,54,55,
 #                                         56,57,59,60,63,78,79,83]
 
-# index_and_feature=[]
-# for i in range (len(Index)):
-#     index_and_feature.append ([Index[i],cols[i]])
-# print (index_and_feature)
 
 index_and_feature=[['MainBranch', 2], ['Hobbyist', 3], ['OpenSourcer', 4], ['OpenSource', 5], ['Employment', 6],
-                   ['Country', 7], ['Student','no',8], ['EdLevel', 9], ['UndergradMajor', 10], ['EduOther','no', 11],
+                   ['Country', 7], ['EdLevel', 9], ['UndergradMajor', 10],
                    ['OrgSize', 12], ['DevType', 13], ['YearsCode', 14], ['Age1stCode', 15], ['YearsCodePro', 16],
                    ['CareerSat', 17], ['JobSat', 18], ['MgrIdiot', 19], ['MgrMoney', 20], ['MgrWant', 21], ['JobSeek', 22],
                    ['LastHireDate', 23], ['ConvertedComp', 32], ['WorkWeekHrs', 33], ['WorkPlan','no',34], ['WorkRemote', 36],
@@ -54,7 +51,7 @@ index_and_feature=[['MainBranch', 2], ['Hobbyist', 3], ['OpenSourcer', 4], ['Ope
 ####  ********** drop the NaN data
 data_original.dropna(axis=0, how='any', inplace=True)
 
-# ***** drop the sample belong to students/hobby, select the professional programmer
+    # ***** drop the sample belong to students/hobby, select the professional programmer
 data_original = data_original [True^data_original['MainBranch'].isin(['I am a student who is learning to code'])]
 data_original = data_original [True^data_original['MainBranch'].isin(['I am not primarily a developer, but I write code sometimes as part of my work'])]
 data_original = data_original [True^data_original['MainBranch'].isin(['I code primarily as a hobby'])]
@@ -90,9 +87,8 @@ valid_UndergradMajor=['Computer science, computer engineering, or software engin
                       'I never declared a major']
 data_original = data_original [data_original['UndergradMajor'].isin(valid_UndergradMajor)]
 
-#['OrgSize', 12]
 
-# ['DevType', 13]:   add 23 features (different jobs)
+# ['DevType', 13]:   add 24 features (different jobs)
 # print (data_original['DevType'])
 
 career=['Academic researcher','Data or business analyst','Data scientist or machine learning specialist',
@@ -151,7 +147,7 @@ print ('----------------------------?-------------------------------------------
 
 # ['ConvertedComp', 32]:   存在0？？############ y label----------------  drop unrealistic data salary==0
 data_original['ConvertedComp'] = data_original['ConvertedComp'].astype(int)
-data_original = data_original [True^data_original['ConvertedComp'].isin(['0'])]      # drop the unrealistic sample : 0 dollors/year
+data_original = data_original [True^data_original['ConvertedComp'].isin(['0'])]      # drop the unrealistic sample : 0 dollars/year
 data_original.index=[i for i in range(data_original.shape[0])]
 print ('----------------------------?--------------------------------------------------------')
 
@@ -213,10 +209,12 @@ int_feature=['YearsCode',	'Age1stCode'	,'YearsCodePro','WorkWeekHrs'	,'CodeRevHr
              'Marketing or sales professional','Product manager','Scientist','Senior Executive (CSuite, VP, etc.)',
              'Student','System administrator']
 
-str_feature=['Hobbyist'	,'OpenSourcer','OpenSource','Employment',	'Country',	'EdLevel'	,'UndergradMajor'	,'OrgSize'	,
-             'CareerSat'	,'JobSat',	'MgrIdiot',	'MgrMoney',	'MgrWant'	,'JobSeek',	'LastHireDate','WorkPlan'	,
-             'WorkRemote'	,'WorkLoc'	,'ImpSyn'	,'CodeRev',		'PurchaseWhat'	,'OpSys'	,'Containers'	,
-             'BlockchainOrg'	,'BetterLife'	,'ITperson'	,'Extraversion',	'Gender',	'Dependents']
+str_feature=['Hobbyist'	,'OpenSourcer','OpenSource','Employment',	'Country',
+             'EdLevel'	,'UndergradMajor'	,'OrgSize'	,'CareerSat'	,'JobSat',
+             'MgrIdiot',	'MgrMoney',	'MgrWant'	,'JobSeek',	'LastHireDate',
+             'WorkPlan'	, 'WorkRemote'	,'WorkLoc'	,'ImpSyn'	,'CodeRev',
+             'PurchaseWhat'	,'OpSys','Containers'	, 'BlockchainOrg'	,'BetterLife' ,
+             'ITperson'	,'Extraversion', 'Gender',	'Dependents']
 
 label=['ConvertedComp']
 
@@ -227,20 +225,33 @@ for feature in str_feature:
 
 from sklearn.model_selection import train_test_split
 train, test = train_test_split(data_original, test_size=0.3)
+train, validation = train_test_split(train, test_size=0.25)
 
 train.index = [i for i in range(train.shape[0])]
 test.index = [i for i in range(test.shape[0])]
+validation.index = [i for i in range(validation.shape[0])]
 
-if __name__ == '__main__':
-    print(train)
 
+data_original.to_csv('/Users/muhaoguo/Documents/study/EE660/project/data_train+test+validation.csv')
 train.to_csv('/Users/muhaoguo/Documents/study/EE660/project/train.csv')
 test.to_csv('/Users/muhaoguo/Documents/study/EE660/project/test.csv')
+validation.to_csv('/Users/muhaoguo/Documents/study/EE660/project/validation.csv')
+
 
 train_path = '/Users/muhaoguo/Documents/study/EE660/project/train.csv'
 train = pd.read_csv(train_path, index_col=0)
 test_path = '/Users/muhaoguo/Documents/study/EE660/project/test.csv'
 test = pd.read_csv(test_path, index_col=0)
+validation_path = '/Users/muhaoguo/Documents/study/EE660/project/validation.csv'
+validation = pd.read_csv(validation_path, index_col=0)
+
+print("train")
+print(train)
+print("test")
+print(test)
+print("validation")
+print(validation)
+
 
 #####  separate x and y：
 y_train = train.loc[:,'ConvertedComp']
@@ -249,5 +260,7 @@ x_train = train.drop(['MainBranch','ConvertedComp'],axis=1)
 y_test = test.loc[:,'ConvertedComp']
 x_test = test.drop(['MainBranch','ConvertedComp'],axis=1)
 
+y_validation = validation.loc[:,'ConvertedComp']
+x_validation = validation.drop(['MainBranch','ConvertedComp'],axis=1)
 
 print ('------------here is data preprocessing---------------------')
